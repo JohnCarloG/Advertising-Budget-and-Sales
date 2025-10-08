@@ -15,8 +15,14 @@ const els = {
   historyEmpty: document.getElementById("history-empty"),
   clearHistory: document.getElementById("clear-history"),
   apiStatus: document.getElementById("api-status"),
-  toggleTheme: document.getElementById("toggle-theme")
+  toggleTheme: document.getElementById("toggle-theme"),
   // convertBtn rimosso
+  chatForm: document.getElementById("chat-form"),
+  chatInput: document.getElementById("chat-input"),
+  chatSend: document.getElementById("chat-send"),
+  chatSendSpinner: document.querySelector("#chat-send .spinner"),
+  chatSendLabel: document.querySelector("#chat-send .btn-label"),
+  chatLog: document.getElementById("chat-log")
 };
 
 const HISTORY_KEY = "predHistoryV1";
@@ -124,6 +130,47 @@ async function predict() {
   }
 }
 
+function setChatLoading(v){
+  els.chatSend.disabled = v;
+  els.chatSendSpinner.classList.toggle("hidden", !v);
+  els.chatSendLabel.textContent = v ? "..." : "Invia";
+}
+
+function appendMsg(role, text){
+  if(!els.chatLog) return;
+  const div = document.createElement("div");
+  div.className = "msg " + (role === "user" ? "user" : "assistant");
+  div.textContent = text;
+  els.chatLog.appendChild(div);
+  els.chatLog.scrollTop = els.chatLog.scrollHeight;
+}
+
+async function sendChat(e){
+  e.preventDefault();
+  const q = (els.chatInput.value || "").trim();
+  if(!q) return;
+  appendMsg("user", q);
+  els.chatInput.value = "";
+  setChatLoading(true);
+  try{
+    const resp = await fetch(API_URL.replace("/predict","/chat"), {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({question:q})
+    });
+    const data = await resp.json();
+    if(resp.ok && data.answer){
+      appendMsg("assistant", data.answer);
+    } else {
+      appendMsg("assistant", "Errore: " + (data.error || "risposta non valida"));
+    }
+  }catch(err){
+    appendMsg("assistant", "Errore connessione API chat.");
+  }finally{
+    setChatLoading(false);
+  }
+}
+
 function attachEvents() {
   els.predictBtn.addEventListener("click", predict);
   [els.tv, els.radio, els.news].forEach(inp => {
@@ -137,6 +184,15 @@ function attachEvents() {
     renderHistory();
   });
   els.toggleTheme.addEventListener("click", toggleTheme);
+  if(els.chatForm){
+    els.chatForm.addEventListener("submit", sendChat);
+    els.chatInput.addEventListener("keydown", e=>{
+      if(e.key==="Enter" && !e.shiftKey){
+        e.preventDefault();
+        sendChat(e);
+      }
+    });
+  }
   // listener convertBtn rimosso
 }
 

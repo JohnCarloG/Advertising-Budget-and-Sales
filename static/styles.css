@@ -196,6 +196,54 @@ tbody tr:hover{background:rgba(0,0,0,.04)}
   margin-top:-12px;
 }
 
+/* --- Chat styles --- */
+.chat-log{
+  min-height:140px;
+  max-height:260px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  font-size:.78rem;
+  padding:4px 2px 2px;
+}
+.msg{
+  padding:8px 10px;
+  border-radius:12px;
+  line-height:1.35;
+  white-space:pre-wrap;
+  word-break:break-word;
+  animation:fadeIn .25s ease;
+}
+.msg.user{
+  background:var(--primary);
+  color:#fff;
+  align-self:flex-end;
+  box-shadow:0 2px 6px -2px rgba(0,0,0,.25);
+}
+.msg.assistant{
+  background:var(--bg);
+  border:1px solid var(--border);
+}
+.chat-input-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+#chat-input{
+  resize:vertical;
+  min-height:60px;
+  max-height:180px;
+  padding:10px 12px;
+  font-size:.85rem;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--bg);
+  outline:none;
+}
+#chat-input:focus{border-color:var(--primary)}
+/* --- end chat styles --- */
+
 @media (max-width:640px){
   body{padding:20px 14px}
   .app-container{gap:24px}

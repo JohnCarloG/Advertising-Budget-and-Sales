@@ -68,6 +68,20 @@
       </div>
     </section>
 
+    <section class="card" id="chat-card">
+      <h2 class="card-title">Assistant</h2>
+      <div id="chat-log" class="chat-log" aria-live="polite"></div>
+      <form id="chat-form" class="chat-input-wrap" novalidate>
+        <textarea id="chat-input" placeholder="Fai una domanda sul progetto..." spellcheck="false"></textarea>
+        <div class="actions">
+          <button type="submit" id="chat-send" class="primary-btn">
+            <span class="btn-label">Invia</span>
+            <span class="spinner hidden"></span>
+          </button>
+        </div>
+      </form>
+    </section>
+
     <footer class="footer">
       <span>Demo ML &middot; RandomForest (best) &middot; <a href="https://scikit-learn.org/" target="_blank" rel="noopener">scikit-learn</a></span>
     </footer>
