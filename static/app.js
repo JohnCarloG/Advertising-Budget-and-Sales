@@ -15,8 +15,8 @@ const els = {
   historyEmpty: document.getElementById("history-empty"),
   clearHistory: document.getElementById("clear-history"),
   apiStatus: document.getElementById("api-status"),
-  toggleTheme: document.getElementById("toggle-theme"),
-  convertBtn: document.getElementById("convert")
+  toggleTheme: document.getElementById("toggle-theme")
+  // convertBtn rimosso
 };
 
 const HISTORY_KEY = "predHistoryV1";
@@ -59,7 +59,6 @@ function setLoading(isLoading) {
   els.spinner.classList.toggle("hidden", !isLoading);
   if (isLoading) {
     els.btnLabel.textContent = "Calcolo...";
-    els.convertBtn.disabled = true;
   } else {
     els.btnLabel.textContent = "Predici";
   }
@@ -105,8 +104,8 @@ async function predict() {
     const data = await resp.json();
     if (resp.ok && typeof data.prediction === "number") {
       lastPredictionUSD = data.prediction;
-      els.result.textContent = `Vendite previste: ${data.prediction.toFixed(3)} $`;
-      els.convertBtn.disabled = false; // abilita conversione
+      const eur = lastPredictionUSD * RATE_TO_EUR;
+      els.result.textContent = `Vendite previste: ${lastPredictionUSD.toFixed(3)} $ (~${eur.toFixed(3)} €)`;
       history.unshift({
         ...payload,
         prediction: data.prediction,
@@ -116,7 +115,6 @@ async function predict() {
       renderHistory();
     } else {
       els.result.textContent = `Errore: ${data.error || "Risposta non valida"}`;
-      els.convertBtn.disabled = true;
       lastPredictionUSD = null;
     }
   } catch (e) {
@@ -139,13 +137,7 @@ function attachEvents() {
     renderHistory();
   });
   els.toggleTheme.addEventListener("click", toggleTheme);
-  els.convertBtn.addEventListener("click", () => {
-    if (lastPredictionUSD == null) return;
-    const eur = lastPredictionUSD * RATE_TO_EUR;
-    els.result.textContent =
-      `Vendite previste: ${lastPredictionUSD.toFixed(3)} $ (~${eur.toFixed(3)} €)`;
-    els.convertBtn.disabled = true;
-  });
+  // listener convertBtn rimosso
 }
 
 async function healthCheck() {
