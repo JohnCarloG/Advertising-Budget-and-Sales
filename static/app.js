@@ -15,12 +15,15 @@ const els = {
   historyEmpty: document.getElementById("history-empty"),
   clearHistory: document.getElementById("clear-history"),
   apiStatus: document.getElementById("api-status"),
-  resetForm: document.getElementById("reset-form"),
-  toggleTheme: document.getElementById("toggle-theme")
+  toggleTheme: document.getElementById("toggle-theme"),
+  convertBtn: document.getElementById("convert")
 };
 
 const HISTORY_KEY = "predHistoryV1";
 let history = loadHistory();
+
+const RATE_TO_EUR = 0.93; // tasso fisso modificabile
+let lastPredictionUSD = null;
 
 function loadHistory() {
   try {
@@ -56,6 +59,7 @@ function setLoading(isLoading) {
   els.spinner.classList.toggle("hidden", !isLoading);
   if (isLoading) {
     els.btnLabel.textContent = "Calcolo...";
+    els.convertBtn.disabled = true;
   } else {
     els.btnLabel.textContent = "Predici";
   }
@@ -100,7 +104,9 @@ async function predict() {
     });
     const data = await resp.json();
     if (resp.ok && typeof data.prediction === "number") {
-      els.result.textContent = `Vendite previste: ${data.prediction.toFixed(3)}`;
+      lastPredictionUSD = data.prediction;
+      els.result.textContent = `Vendite previste: ${data.prediction.toFixed(3)} $`;
+      els.convertBtn.disabled = false; // abilita conversione
       history.unshift({
         ...payload,
         prediction: data.prediction,
@@ -110,6 +116,8 @@ async function predict() {
       renderHistory();
     } else {
       els.result.textContent = `Errore: ${data.error || "Risposta non valida"}`;
+      els.convertBtn.disabled = true;
+      lastPredictionUSD = null;
     }
   } catch (e) {
     els.result.textContent = "Errore di connessione all'API.";
@@ -130,11 +138,14 @@ function attachEvents() {
     saveHistory();
     renderHistory();
   });
-  els.resetForm.addEventListener("click", () => {
-    setTimeout(validate, 0);
-    els.result.textContent = "";
-  });
   els.toggleTheme.addEventListener("click", toggleTheme);
+  els.convertBtn.addEventListener("click", () => {
+    if (lastPredictionUSD == null) return;
+    const eur = lastPredictionUSD * RATE_TO_EUR;
+    els.result.textContent =
+      `Vendite previste: ${lastPredictionUSD.toFixed(3)} $ (~${eur.toFixed(3)} €)`;
+    els.convertBtn.disabled = true;
+  });
 }
 
 async function healthCheck() {
