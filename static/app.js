@@ -49,7 +49,7 @@ function renderHistory() {
       <td>${h.TV}</td>
       <td>${h.Radio}</td>
       <td>${h.Newspaper}</td>
-      <td>${h.prediction.toFixed(3)}</td>
+      <td>${h.prediction.toFixed(2)}</td>
       <td>${h.time}</td>
     </tr>`).join("");
 }
@@ -105,7 +105,7 @@ async function predict() {
     if (resp.ok && typeof data.prediction === "number") {
       lastPredictionUSD = data.prediction;
       const eur = lastPredictionUSD * RATE_TO_EUR;
-      els.result.textContent = `Vendite previste: ${lastPredictionUSD.toFixed(3)} $ (~${eur.toFixed(3)} €)`;
+      els.result.textContent = `Vendite previste: ${lastPredictionUSD.toFixed(2)} $ (~${eur.toFixed(2)} €)`;
       history.unshift({
         ...payload,
         prediction: data.prediction,
