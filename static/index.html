@@ -4,22 +4,73 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Sales Predictor</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    body{font-family:Arial;margin:32px}
-    label{display:block;margin-top:12px}
-    input[type=number]{width:140px;padding:6px}
-    button{margin-top:12px;padding:8px 12px}
-    #result{margin-top:16px;font-weight:700}
+    /* Fallback minimo se styles.css non carica */
+    .hidden{display:none}
   </style>
 </head>
 <body>
-  <h2>Previsione vendite</h2>
-  <div>
-    <label>TV ($): <input id="tv" type="number" step="0.1" value="100"></label>
-    <label>Radio ($): <input id="radio" type="number" step="0.1" value="20"></label>
-    <label>Newspaper ($): <input id="newspaper" type="number" step="0.1" value="10"></label>
-    <button id="predict">Predici</button>
-    <div id="result"></div>
+  <div class="app-container">
+    <header>
+      <h1>Previsione Vendite</h1>
+      <div class="sub">Inserisci i budget pubblicitari e ottieni la stima delle vendite.</div>
+      <div class="status-bar">
+        <span id="api-status" class="status-pill status-unknown">API?</span>
+        <button id="toggle-theme" class="ghost-btn" aria-label="Tema">🌓</button>
+      </div>
+    </header>
+
+    <section class="card" id="form-card">
+      <h2 class="card-title">Input Budget</h2>
+      <form id="predict-form" novalidate>
+        <div class="grid">
+          <label class="field">
+            <span>TV ($)</span>
+            <input id="tv" type="number" step="0.1" min="0" value="100" required>
+          </label>
+          <label class="field">
+            <span>Radio ($)</span>
+            <input id="radio" type="number" step="0.1" min="0" value="20" required>
+          </label>
+            <label class="field">
+            <span>Newspaper ($)</span>
+            <input id="newspaper" type="number" step="0.1" min="0" value="10" required>
+          </label>
+        </div>
+        <div id="errors" class="errors hidden"></div>
+        <div class="actions">
+          <button type="button" id="predict" class="primary-btn">
+            <span class="btn-label">Predici</span>
+            <span class="spinner hidden"></span>
+          </button>
+          <button type="reset" class="ghost-btn" id="reset-form">Reset</button>
+        </div>
+      </form>
+      <div id="result" class="result-box" aria-live="polite"></div>
+    </section>
+
+    <section class="card" id="history-card">
+      <div class="history-header">
+        <h2 class="card-title">Cronologia</h2>
+        <button id="clear-history" class="ghost-btn small" title="Svuota cronologia">Pulisci</button>
+      </div>
+      <div id="history-empty" class="muted">Nessuna previsione ancora.</div>
+      <div class="table-wrapper">
+        <table id="history-table" class="hidden">
+          <thead>
+            <tr>
+              <th>TV</th><th>Radio</th><th>News</th><th>Vendite</th><th>Ora</th>
+            </tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>Demo ML &middot; RandomForest (best) &middot; <a href="https://scikit-learn.org/" target="_blank" rel="noopener">scikit-learn</a></span>
+    </footer>
   </div>
   <script src="app.js"></script>
 </body>

@@ -22,21 +22,6 @@ def load_csv():
     for p in DATA_PATHS:
         if os.path.exists(p):
             return pd.read_csv(p)
-    # Optional: try Kaggle API if credentials present
-    try:
-        from kaggle.api.kaggle_api_extended import KaggleApi
-        api = KaggleApi()
-        api.authenticate()
-        os.makedirs("data", exist_ok=True)
-        api.dataset_download_file('yasserh/advertising-sales-dataset',
-                                  file_name='Advertising Budget and Sales.csv',
-                                  path='data', force=False)
-        # downloaded file should now exist at data/Advertising Budget and Sales.csv
-        p = "data/Advertising Budget and Sales.csv"
-        if os.path.exists(p):
-            return pd.read_csv(p)
-    except Exception:
-        pass
     raise FileNotFoundError("CSV non trovato. Metti il file in ./data/Advertising Budget and Sales.csv o installa kaggle e configura le credenziali.")
 
 df = load_csv()
