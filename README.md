@@ -12,6 +12,12 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ```bash
 pip install -r requirements.txt
+python train_model.py
 python api_server.py
 python web_server.py
+```
+
+
+```bash
+http://localhost:5000/
 ```
